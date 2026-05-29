@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Card ∞ </title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        :root {
+            /* === NEW EARTHY PALETTE === */
+            --sky-blue:    #4FA8C0;
+            --deep-teal:   #2E6B70;
+            --warm-amber:  #C8843A;
+            --brick-red:   #B84C30;
+            --cream-white: #F5F0E8;
+            --bg-sand:     #E8DCC8;
+
+            /* --- Mapped Theme --- */
+            --body-bg:           var(--bg-sand);
+            --card-bg:           var(--cream-white);
+            --text-primary:      #2c1f14;
+            --text-secondary:    #6b5744;
+            --text-accent:       var(--deep-teal);
+            --bio-color:         var(--warm-amber);
+            --infinity-stroke:   var(--brick-red);
+            --card-shadow:       0 8px 32px rgba(46, 107, 112, 0.18), 0 2px 8px rgba(184, 76, 48, 0.10);
+            --social-icon-filter: none;
+            --footer-text-color: #8c7260;
+            --menu-bg:           rgba(245, 240, 232, 0.95);
+            --menu-border:       1px solid #d4c4a8;
+            --menu-text:         #2c1f14;
+            --menu-icon-fill:    var(--deep-teal);
+            --popup-bg:          var(--cream-white);
+            --popup-text:        #2c1f14;
+            --popup-shadow:      0 5px 20px rgba(46, 107, 112, 0.2);
+            --icon-bg:           #e0d4bc;
+            --icon-fill:         var(--deep-teal);
+            --copy-btn-bg:       #ddd0b8;
+            --copy-btn-fill:     var(--deep-teal);
+            --ripple-color:      rgba(79, 168, 192, 0.6);
+            --link-box-bg:       #ede5d4;
+            --link-box-border:   #d4c4a8;
+            --scan-text-bg:      rgba(79, 168, 192, 0.08);
+            --sparkle-color:     var(--warm-amber);
+            --sparkle-size:      5px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 100%; background-color: var(--bg-sand); }
+
+        body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            background: var(--body-bg);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            padding: 20px 15px;
+            perspective: 1000px;
+        }
+
+        .profile-card {
+            max-width: 340px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+            height: 590px;
+            background: transparent;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .profile-card.is-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+        .card-front {
+            background: var(--card-bg);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            padding: 3px;
+            background: linear-gradient(45deg, var(--sky-blue), var(--deep-teal), var(--warm-amber), var(--brick-red), var(--sky-blue));
+            background-size: 400% 400%;
+            animation: earthy-shift 8s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes earthy-shift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .card-back-content {
+            background: var(--card-bg);
+            width: 100%;
+            height: 100%;
+            border-radius: 17px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .scan-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-image: linear-gradient(135deg, var(--sky-blue), var(--brick-red));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .version-text {
+            font-size: 10px;
+            color: var(--text-secondary);
+            position: absolute;
+            bottom: -16px;
+            left: 10px;
+            margin: 0;
+        }
+
+        .qr-code {
+            width: 280px;
+            height: 280px;
+            border-radius: 30px;
+            border: 5px solid var(--bg-sand);
+            background-color: white;
+            padding: 5px;
+            position: relative;
+        }
+
+        .link-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        #page-link-box {
+            background-color: var(--link-box-bg);
+            border: 1px solid var(--link-box-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-grow: 1;
+        }
+
+        #copy-link-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: var(--copy-btn-bg);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        #copy-link-button:hover { transform: scale(1.1); }
+        #copy-link-button svg { width: 14px; height: 14px; fill: var(--copy-btn-fill); }
+
+        .profile-header {
+            position: relative;
+            margin: -30px -30px 0 -30px;
+        }
+
+        .cover-photo {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cover-photo, .profile-picture img {
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .profile-picture {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            left: 50%;
+            bottom: -80px;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid var(--cream-white);
+            box-shadow: 0 4px 15px rgba(46, 107, 112, 0.25);
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-picture::before,
+        .profile-picture::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--ripple-color);
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: ripple-effect 10s ease-out infinite;
+            z-index: 0;
+        }
+        .profile-picture::after { animation-delay: 5s; }
+
+        @keyframes ripple-effect {
+            0%   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0; }
+        }
+
+        .logo-container { 
+            position: absolute; 
+            top: 18px; 
+            left: 18px; 
+            width: 56px; 
+            height: 56px; 
+            z-index: 3; 
+        }
+        /* Outer circle border draw animation */
+        .logo-circle-ring {
+            fill: none;
+            stroke: #E8500A;
+            stroke-width: 5;
+            stroke-linecap: round;
+            stroke-dasharray: 290;
+            stroke-dashoffset: 290;
+            animation: draw-ring 1.2s ease forwards;
+        }
+        /* NJ letters fill-in */
+        .logo-letters {
+            fill: #E8500A;
+            opacity: 0;
+            animation: fade-fill 0.5s ease 1s forwards;
+        }
+        /* Sword draw */
+        .logo-sword {
+            fill: none;
+            stroke: #E8500A;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: draw-sword 0.8s ease 0.6s forwards;
+        }
+        .logo-sword-fill {
+            fill: #E8500A;
+            opacity: 0;
+            animation: fade-fill 0.3s ease 1.4s forwards;
+        }
+        @keyframes draw-ring {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes draw-sword {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes fade-fill {
+            to { opacity: 1; }
+        }
+        /* Pulse glow on the logo after load */
+        .logo-container svg {
+            animation: logo-glow 3s ease-in-out 2s infinite;
+            filter: drop-shadow(0 0 0px #E8500A);
+        }
+        @keyframes logo-glow {
+            0%, 100% { filter: drop-shadow(0 0 2px rgba(232,80,10,0.3)); }
+            50%       { filter: drop-shadow(0 0 8px rgba(232,80,10,0.7)); }
+        }
+
+        .name {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 100px 0 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--deep-teal), var(--brick-red), var(--warm-amber), var(--deep-teal));
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: mist-effect 100s ease infinite;
+            transition: all 0.4s ease-in-out;
+        }
+        .name:hover { animation-duration: 20s; }
+        @keyframes mist-effect { 
+            0%   { background-position: 0% 50%; } 
+            50%  { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        }
+
+        .verified-badge {
+            width: 20px;
+            height: 20px;
+            margin-left: 8px;
+            vertical-align: middle;
+            position: relative;
+            top: -2px;
+        }
+
+        .bio { 
+            font-family: 'Pacifico', cursive; 
+            font-size: 16px; 
+            color: var(--bio-color); 
+            margin-top: 10px; 
+            margin-bottom: 25px; 
+            min-height: 80px; 
+            position: relative; 
+        }
+        .bio::after { 
+            content: '|'; 
+            display: inline-block; 
+            margin-left: 3px; 
+            font-weight: 300; 
+            animation: blink 0.7s infinite; 
+        }
+        .bio.typing-done::after { display: none; }
+        @keyframes blink { 
+            0%, 100% { opacity: 1; } 
+            50%       { opacity: 0; } 
+        }
+
+        .social-icons { 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+        }
+        .social-icon { 
+            width: 35px; 
+            height: 35px; 
+            transition: transform 0.3s; 
+        }
+        .social-icon:hover { transform: scale(1.1); }
+        .social-icon svg { width: 35px; height: 35px; }
+
+        .info { 
+            margin-top: 25px; 
+            font-size: 12px; 
+            color: var(--text-accent); 
+        }
+        #ip-address { 
+            font-size: 14px; 
+            font-weight: 600; 
+        }
+
+        .id-clock-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+            gap: 10px;
+        }
+
+        .id-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        #copy-id-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background-color: var(--copy-btn-bg);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        #copy-id-button:hover { transform: scale(1.1); }
+        #copy-id-button svg { width: 12px; height: 12px; fill: var(--copy-btn-fill); }
+
+        #copy-feedback {
+            position: absolute;
+            right: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 5px;
+            font-weight: bold;
+            color: var(--text-accent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #copy-feedback.visible { opacity: 1; }
+
+        /* === CLOCK & GREETING === */
+        .time-box-wrapper {
+            overflow: hidden;
+            height: 22px;
+            background: rgba(46, 107, 112, 0.08); 
+            padding: 2px 8px; 
+            border-radius: 10px; 
+            z-index: 5; 
+            flex-shrink: 0;
+            min-width: 150px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .time-content {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%) translateX(100%);
+            font-size: 12px; 
+            font-weight: 600; 
+            color: var(--text-accent); 
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 0 8px;
+            min-width: 100%;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .time-content.slide-in  { transform: translateY(-50%) translateX(0); }
+        .time-content.slide-out { transform: translateY(-50%) translateX(-100%); }
+        .live-clock, .greeting-text { display: inline-block; line-height: 18px; }
+
+        .page-footer { 
+            width: 100%; 
+            text-align: center; 
+            padding: 0 15px 15px 15px; 
+            flex-shrink: 0; 
+        }
+        .footer-text { 
+            font-size: 10px; 
+            color: var(--footer-text-color); 
+            opacity: 0.8; 
+        }
+
+        /* === MENU BUTTON === */
+        .menu-button { 
+            position: absolute; 
+            top: 25px; 
+            right: 25px; 
+            padding: 5px; 
+            background: transparent; 
+            border: none; 
+            cursor: pointer; 
+            z-index: 4; 
+            border-radius: 8px;
+        }
+        .menu-button svg rect { 
+            fill: var(--menu-icon-fill); 
+        }
+
+        /* === SPARKLE === */
+        .sparkle-effect {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        .sparkle-effect.hidden { opacity: 0; }
+        .sparkle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: var(--sparkle-size);
+            height: var(--sparkle-size);
+            background-color: var(--sparkle-color);
+            box-shadow: 0 0 2px var(--sparkle-color), 0 0 4px var(--sparkle-color);
+            border-radius: 50%;
+            animation: sparkle-pulse 1.5s ease-in-out infinite;
+        }
+        .sparkle::before, .sparkle::after {
+            content: '';
+            position: absolute;
+            background-color: var(--sparkle-color);
+            box-shadow: 0 0 2px var(--sparkle-color);
+        }
+        .sparkle::before { width: 150%; height: 20%; top: 40%; left: -25%; transform: rotate(0deg); }
+        .sparkle::after  { width: 150%; height: 20%; top: 40%; left: -25%; transform: rotate(90deg); }
+        @keyframes sparkle-pulse {
+            0%, 100% { transform: scale(0.8) rotate(0deg);   opacity: 0.9; }
+            50%       { transform: scale(1.1) rotate(180deg); opacity: 1; box-shadow: 0 0 4px var(--sparkle-color), 0 0 8px var(--sparkle-color); }
+            75%       { transform: scale(1.0) rotate(270deg); }
+        }
+
+        /* === MENU === */
+        .menu {
+            display: none;
+            position: absolute;
+            top: 75px;
+            right: 25px;
+            background: var(--menu-bg);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            border: var(--menu-border);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(46, 107, 112, 0.2);
+            z-index: 10;
+            overflow: hidden;
+            min-width: 250px;
+            transform-origin: top right;
+        }
+        .menu.is-opening { animation: open-menu 0.3s ease-out forwards; }
+        .menu.is-closing { animation: close-menu 0.3s ease-out forwards; }
+
+        .menu-item { 
+            padding: 15px 20px; 
+            cursor: pointer; 
+            color: var(--menu-text); 
+            font-weight: 500; 
+            transition: background-color 0.2s ease; 
+        }
+        .menu-item:hover { background-color: rgba(79, 168, 192, 0.1); }
+
+        .quote-container { 
+            padding: 15px; 
+            border-top: var(--menu-border); 
+        }
+        .quote-container iframe { width: 100%; height: 200px; border: none; border-radius: 10px; }
+        .quote-container a { display: block; font-size: 12px; color: var(--menu-text); margin-top: 10px; font-weight: bold; }
+
+        @keyframes open-menu { 
+            from { opacity: 0; transform: translateY(-15px) scale(0.20); } 
+            to   { opacity: 1; transform: translateY(0) scale(1); } 
+        }
+        @keyframes close-menu { 
+            from { opacity: 1; transform: translateY(0) scale(1); } 
+            to   { opacity: 0; transform: translateY(-15px) scale(0.20); } 
+        }
+
+        /* === BIRTHDAY POPUP === */
+        #birthday-popup-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background-color: rgba(44, 31, 20, 0.5); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 15px; 
+            animation: fade-in 0.4s ease; 
+        }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        #birthday-popup-content { 
+            background: var(--popup-bg); 
+            color: var(--popup-text); 
+            padding: 30px 40px; 
+            border-radius: 15px; 
+            text-align: center; 
+            position: relative; 
+            box-shadow: var(--popup-shadow); 
+            max-width: 90%; 
+            width: 380px; 
+            animation: slide-in 0.4s ease-out; 
+        }
+        @keyframes slide-in { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* === CHANGELOG PAGE === */
+        #changelog-page { 
+            display: none;
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: var(--body-bg);
+            z-index: 999; 
+            justify-content: center; 
+            align-items: flex-start;
+            padding: 20px; 
+            overflow-y: auto;
+            animation: fade-in 0.3s ease;
+        }
+        #changelog-content { 
+            background: var(--card-bg); 
+            color: var(--popup-text); 
+            padding: 20px; 
+            border-radius: 15px; 
+            position: relative; 
+            box-shadow: var(--card-shadow); 
+            width: 100%; 
+            max-width: 700px;
+            margin: 0 auto;
+            min-height: 100%;
+        }
+        #changelog-content h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--text-accent);
+            color: var(--text-primary);
+        }
+        #changelog-content .changelogs-list {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin: 0 0 15px 0;
+            color: var(--popup-text);
+        }
+        .changelogs-container {
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+            padding-right: 15px;
+        }
+        #birthday-popup-content p, #changelog-content p { 
+            margin-bottom: 15px; 
+            font-size: 16px; 
+            font-family: 'Poppins', sans-serif;
+        }
+        #changelog-content ul li {
+            font-size: 14px;
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(100, 100, 100, 0.2);
+        }
+        #changelog-content ul li:last-child { border-bottom: none; }
+        #changelog-content .no-updates {
+            background: linear-gradient(135deg, var(--sky-blue), var(--brick-red));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+        }
+
+        #birthday-popup-close, #changelog-close-btn { 
+            position: absolute; top: 10px; right: 15px; 
+            background: transparent; border: none; 
+            font-size: 28px; line-height: 1; 
+            color: var(--popup-text); cursor: pointer; 
+            opacity: 0.7; transition: opacity 0.2s; 
+            z-index: 10;
+        }
+        #birthday-popup-close:hover, #changelog-close-btn:hover { opacity: 1; }
+
+        .gift-link { 
+            display: inline-block; 
+            margin-top: 10px; 
+            padding: 10px 20px; 
+            background-color: var(--deep-teal); 
+            color: white !important; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            transition: background-color 0.3s ease, transform 0.2s ease; 
+        }
+        .gift-link:hover { transform: scale(1.05); background-color: var(--brick-red); }
+
+        /* === BOTTOM ICONS === */
+        .bottom-icons-container { 
+            position: absolute; 
+            bottom: 15px; right: 15px; 
+            z-index: 10; 
+            display: flex; 
+            gap: 8px; 
+        }
+        .icon-wrapper { position: relative; z-index: 11; }
+
+        .info-icon {
+            width: 20px; height: 20px;
+            background-color: var(--icon-bg);
+            color: var(--icon-fill);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+            user-select: none;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(46, 107, 112, 0.15);
+        }
+        .info-icon:hover { transform: scale(1.15); }
+        .info-icon svg { width: 12px; height: 12px; fill: var(--icon-fill); }
+        .flip-icon { font-size: 14px; line-height: 20px; }
+        #version-info-icon { font-family: serif; font-style: italic; }
+
+        .info-popup {
+            display: none;
+            position: absolute;
+            bottom: 30px; right: 0;
+            width: 240px;
+            background: var(--popup-bg);
+            color: var(--popup-text);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: var(--popup-shadow);
+            font-size: 13px;
+            line-height: 1.5;
+            text-align: left;
+            transform-origin: bottom right;
+            z-index: 12;
+        }
+        .info-popup p { margin: 0 0 12px 0; }
+        .info-popup a { color: var(--text-accent); text-decoration: none; font-weight: 600; }
+        .info-popup a:hover { text-decoration: underline; }
+
+        .popup-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: var(--deep-teal);
+            color: white !important;
+            padding: 8px 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-decoration: none !important;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .popup-button:hover { transform: scale(1.03); background-color: var(--brick-red); }
+
+        #ip-logger { display: none; }
+    </style>
+</head>
+<body>
+    <main class="content-wrapper">
+        <div class="profile-card" id="profile-card">
+            <div class="card-inner">
+                <div class="card-front">
+                    <!-- NJ Sword Logo (pure SVG, no image) -->
+                    <div class="logo-container">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+                            <!-- Black circle background -->
+                            <circle cx="50" cy="50" r="46" fill="#0a0a0a"/>
+                            <!-- Teal border ring — animated draw -->
+                            <circle cx="50" cy="50" r="46" class="logo-circle-ring"/>
+
+                            <!-- ===== SWORD BEHIND N ===== -->
+                            <!-- Round pommel at top -->
+                            <circle class="logo-sword-fill" cx="50" cy="13" r="4"/>
+                            <!-- Handle / grip (narrow, between pommel and guard) -->
+                            <rect class="logo-sword-fill" x="48" y="17" width="4" height="12"/>
+                            <!-- Guard: short wide bar, clearly a guard shape (wider than blade, shorter than crossguard) -->
+                            <rect class="logo-sword-fill" x="41" y="29" width="18" height="4" rx="2"/>
+                            <!-- Blade: starts below guard, narrows into a sharp point at bottom -->
+                            <polygon class="logo-sword-fill" points="48,33 52,33 51,78 50,82 49,78"/>
+
+                            <!-- Sword animated stroke lines -->
+                            <line class="logo-sword" x1="50" y1="9" x2="50" y2="82"/>
+                            <line class="logo-sword" x1="41" y1="31" x2="59" y2="31"/>
+
+                            <!-- ===== BOLD N LETTER (centered, wide, on top of sword) ===== -->
+                            <!-- Left vertical post -->
+                            <rect class="logo-letters" x="14" y="25" width="11" height="50" rx="1"/>
+                            <!-- Right vertical post -->
+                            <rect class="logo-letters" x="75" y="25" width="11" height="50" rx="1"/>
+                            <!-- Diagonal stroke: top-left to bottom-right -->
+                            <polygon class="logo-letters" points="14,25 25,25 86,75 75,75"/>
+                        </svg>
+                    </div>
+                    
+                    <button class="menu-button" id="menuButton">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30">
+                            <rect x="2" y="2" width="8" height="8"/>
+                            <rect x="14" y="2" width="8" height="8"/>
+                            <rect x="2" y="14" width="8" height="8"/>
+                            <rect x="14" y="14" width="8" height="8"/>
+                        </svg>
+                    </button>
+                    <div class="sparkle-effect" id="sparkleEffect">
+                        <div class="sparkle"></div>
+                    </div>
+                    
+                    <div class="profile-header">
+                        <img src="https://i.ibb.co/JjjSZz3g/92ecd75b-96e4-4f7d-a3f0-74e941024352.gif" alt="Cover Photo" class="cover-photo" id="cover-photo" oncontextmenu="return false;">
+                        <div class="profile-picture">
+                            <img src="https://i.ibb.co/XxPHFLFT/IMG-20250905-191927.jpg" alt="profile not available" oncontextmenu="return false;">
+                        </div>
+                    </div>
+
+                    <h2 class="name">𝐍𝐨𝐫𝐰𝐞𝐥𝐥 𝐕𝐚𝐥𝐝𝐞𝐫𝐚𝐦𝐨𝐬 
+                        <svg class="verified-badge" viewBox="0 0 24 24" aria-label="Verified account">
+                            <path fill="#1d9bf0" d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.67-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.34 2.19c-1.39-.46-2.9-.2-3.91.81s-1.27 2.52-.81 3.91c-1.31.67-2.19 1.91-2.19 3.34s.88 2.67 2.19 3.34c-.46 1.39-.2 2.9.81 3.91s2.52 1.27 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.67-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34z"></path>
+                            <path fill="#ffffff" d="M10.77 16.3l-3.33-3.33c-.4-.4-.4-1.03 0-1.43s1.03-.4 1.43 0l2.62 2.62 4.96-4.96c.4-.4 1.03-.4 1.43 0s.4 1.03 0 1.43l-5.67 5.67c-.2.2-.47.3-.72.3s-.52-.1-.72-.3z"></path>
+                        </svg>
+                    </h2>
+                    <p class="bio">"If you look for perfection, you'll never be content."
+― Leo Tolstoy
+
+</p>
+            
+                    <div class="social-icons">
+                        <a href="https://www.facebook.com/norwell.me" target="_blank" class="social-icon" aria-label="Facebook Profile"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#3F51B5" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238,5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"/><path fill="#FFFFFF" d="M34.368,25H31v13h-5V25h-3v-4h3v-2.41c0.002-3.508,1.459-5.59,5.592-5.59H35v4h-2.287C31.104,17,31,17.6,31,18.723V21h4L34.368,25z"/></svg></a>
+                        <a href="https://twitter.com" target="_blank" class="social-icon" aria-label="Twitter Profile"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#03A9F4" d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429"/></svg></a>
+                        <a href="https://github.com" target="_blank" class="social-icon" aria-label="GitHub Profile"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#455A64" d="M40.3,15.7c0.6-1.7,1.2-5-0.4-8.7c-4.5,0-8.3,3.2-8.9,3.8c-2.2-0.5-4.6-0.7-7-0.7c-2.5,0-4.9,0.3-7.2,0.8C13.7,7.7,9.6,7,8,7c0,0-0.9,1.8-0.9,5c0,2,0.5,3.2,0.8,3.8C5.5,18.3,4,21.7,4,26.1c0,11.2,7.1,15,20,15s20-3.8,20-15C44,21.5,42.6,18.1,40.3,15.7z"/><path fill="#FFFFFF" d="M24,35c-5.5,0-10-0.5-10-4c0-0.9,0.7-1.7,1.5-1.7c0.8,0,1.5,0.7,1.5,1.7c0,0.3,1.5,1,7,1c5.5,0,7-0.7,7-1c0-0.9,0.7-1.7,1.5-1.7s1.5,0.7,1.5,1.7C34,34.5,29.5,35,24,35z M19.5,25c-1.4,0-2.5-1.1-2.5-2.5s1.1-2.5,2.5-2.5s2.5,1.1,2.5,2.5S20.9,25,19.5,25z M28.5,25c-1.4,0-2.5-1.1-2.5-2.5s1.1-2.5,2.5-2.5s2.5,1.1,2.5,2.5S29.9,25,28.5,25z"/></svg></a>
+                        <a href="mailto:ezzzz450@gmail.com" target="_blank" class="social-icon" aria-label="Email"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#4caf50" d="M45,16.2l-5,2.75l-5,4.75L35,40h7c1.657,0,3-1.343,3-3V16.2z"/><path fill="#1e88e5" d="M3,16.2l3.614,1.71L13,23.7V40H6c-1.657,0-3-1.343,3-3V16.2z"/><polygon fill="#e53935" points="35,11.2 24,19.45 13,11.2 12,17 13,23.7 24,31.95 35,23.7 36,17"/><path fill="#c62828" d="M3,12.298V16.2l10,7.5V11.2L9.876,8.859C9.132,8.301,8.228,8,7.298,8h0C4.924,8,3,9.924,3,12.298z"/><path fill="#fbc02d" d="M45,12.298V16.2l-10,7.5V11.2l3.124-2.341C38.868,8.301,39.772,8,40.702,8h0C43.076,8,45,9.924,45,12.298z"/></svg></a>
+                        <a href="tel:09666656662" class="social-icon" aria-label="Phone"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#009688" d="M39.1,7l-3.7,0C22.2,7.2,7.1,24.1,7,35.4v3.7c0,1,0.8,1.9,1.9,1.9l7.5-0.1c1,0,1.9-0.9,1.9-1.9l0.2-8c0-0.8-0.7-1.5-1.5-1.5l-4.3,0c-0.7,0-1.3-0.5-1.3-1.2c0-4.4,10.8-14.6,15.5-16.3c0.5-0.2,1,0.1,1.1,0.7l0.1,3.5c0,0.8,0.7,1.5,1.5,1.5l7.5-0.1c1,0,1.9-0.9,1.9-1.9l0.1-7.8C41,7.8,40.2,7,39.1,7z"/></svg></a>
+                    </div>
+            
+                    <div class="info">
+                        <p>Your IP: <span id="ip-address">Not Logged</span></p>
+                        <div class="id-clock-container">
+                            <div class="id-wrapper">
+                                <span>ID:</span>
+                                <span id="unique-id"></span>
+                                <button id="copy-id-button" aria-label="Copy Unique ID">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                                </button>
+                                <span id="copy-feedback">Copied</span>
+                            </div>
+                            <div class="time-box-wrapper" id="time-box-wrapper">
+                                <span id="greeting-text" class="time-content greeting-text"></span>
+                                <span id="live-clock" class="time-content live-clock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bottom-icons-container">
+                        <div class="icon-wrapper">
+                            <div id="flip-card-front-icon" class="info-icon flip-icon" aria-label="Flip Card">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--icon-fill)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <path d="M7 15 L7 9 L12 15 L12 9"/>
+                                    <line x1="15" y1="9" x2="15" y2="15"/>
+                                    <path d="M21 8 L19 6 L21 4" fill="none"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="icon-wrapper">
+                            <div id="version-info-icon" class="info-icon">i</div>
+                            <div id="version-popup" class="info-popup">
+                                <p>You're currently at the updated version of this page. Do you want to switch to the old version?</p>
+                                <a href="https://card-mv4.github.io/Profilev2/Dev" target="_blank" rel="noopener noreferrer">Switch to old version</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-back">
+                    <div class="card-back-content">
+                        <div id="flip-card-back-icon" class="info-icon flip-icon" aria-label="Flip Card" style="position:fixed;top:15px;right:15px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--icon-fill)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="M7 15 L7 9 L12 15 L12 9"/>
+                                <line x1="15" y1="9" x2="15" y2="15"/>
+                                <path d="M21 8 L19 6 L21 4" fill="none"/>
+                            </svg>
+                        </div>
+                        <p class="scan-text">SCAN TO SHARE</p>
+                        <div class="qr-code">
+                            <img src="https://i.ibb.co/JFWzKRRL/qrcode.png" alt="qrcode" style="width: 100%; height: 100%; border-radius: 25px;">
+                            <p class="version-text">Last updated: November 3 2025</p>
+                        </div>
+                        <div class="link-container">
+                            <div id="page-link-box">https://more-info-norwell-ph.github.io/Profile/Dev.html</div>
+                            <button id="copy-link-button" aria-label="Copy Page Link">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <p class="footer-text">This is an independent project owned and managed by Norwell and not affiliated with any organization. This page is hosted by GitHub.</p>
+    </footer>
+
+    <div class="menu" id="menu">
+        <a href="https://norwell-official-profile-dev.github.io/Projectsv2/ProjectsSept5.html" style="text-decoration: none; color: inherit;"><div class="menu-item">Go to projects</div></a>
+        <a href="https://catchrush.github.io/v2.7/Game.html" style="text-decoration: none; color: inherit;"><div class="menu-item">Play Game</div></a>
+        <div class="menu-item" id="changelog-menu-item">Changelog/Updates</div>
+        <div class="quote-container">
+            <iframe id="quote-iframe" src=""></iframe>
+            <a href="https://kwize.com/quote-of-the-day/">Quote of the day ✨❤️</a>
+        </div>      
+    </div>
+    
+    <div id="birthday-popup-overlay">
+        <div id="birthday-popup-content">
+            <button id="birthday-popup-close">×</button>
+            <p>This owner of this page is currently celebrating their birthday!</p>
+            <p>Do you want to send them a gift?</p>
+            <a href="https://pastebin.com/9xwUE652" target="_blank" class="gift-link">🎁 Send a Gift</a>
+        </div>
+    </div>
+
+    <div id="changelog-page">
+        <div id="changelog-content">
+            <button id="changelog-close-btn">×</button>
+            <h3>Changelog / Updates 📝</h3>
+            <div class="changelogs-container">
+                <ul class="changelogs-list">
+                    <li>Page Creation: **undefined**</li>
+                    <li>Improve Layout: **undefined**</li>
+                    <li>Added quote of the day: **undefined**</li>
+                    <li>Added Projects: **undefined**</li>
+                    <li>Add Dark Theme: **undefined**</li>
+                    <li>Added Game: **undefined**</li>
+                    <li>Added Loading animation: **October 31, 2025**</li>
+                    <li>Fix Loading GIF: **November 2, 2025**</li>
+                    <li>Remove Cookie Pop-up: **November 2, 2025**</li>
+                    <li>Update Infinity Logo Color: **November 2, 2025**</li>
+                    <li>Improve Unique ID: **November 2, 2025**</li>
+                    <li>Added Time based greeting: **November 2, 2025**</li>
+                    <li>Updated Qr code: **November 3, 2025**</li>
+                    <li>Revamped color theme to earthy palette: **May 2026**</li>
+                    <li>Removed loading screen: **May 2026**</li>
+                    <li>Removed dark/light theme toggle: **May 2026**</li>
+                    <li>Replaced infinity logo with NV sword icon: **May 2026**</li>
+                    <li>Fixed IP address display: **May 2026**</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <img id="ip-logger" src="https://iplogger.co/1jTm05" style="display: none;" alt="">
+
+    <script>
+        $(document).ready(function() {
+
+            // --- IP ADDRESS ---
+            $('#ip-address').text('Fetching...');
+            fetch('https://api.ipify.org?format=json')
+                .then(r => r.json())
+                .then(data => { $('#ip-address').text(data.ip); })
+                .catch(() => {
+                    fetch('https://api64.ipify.org?format=json')
+                        .then(r => r.json())
+                        .then(data => { $('#ip-address').text(data.ip); })
+                        .catch(() => { $('#ip-address').text('Unavailable'); });
+                });
+
+            // --- COVER PHOTO TIME-BASED LOGIC ---
+            const coverPhoto = $('#cover-photo');
+            const coverPhotos = {
+                morning:   'https://i.ibb.co/JjjSZz3g/92ecd75b-96e4-4f7d-a3f0-74e941024352.gif',
+                afternoon: 'https://i.ibb.co/ZRd8hPr2/Windmill-GIF.gif',
+                evening:   'https://i.ibb.co/wh9YvCRY/Stars-Night-GIF-Find-Share-on-GIPHY.gif'
+            };
+            function updateCoverPhoto() {
+                const h = new Date().getHours();
+                const t = h >= 6 && h < 12 ? 'morning' : h >= 12 && h < 18 ? 'afternoon' : 'evening';
+                coverPhoto.attr('src', coverPhotos[t]);
+            }
+            updateCoverPhoto();
+            setInterval(updateCoverPhoto, 60000);
+
+            // --- QUOTE IFRAME ---
+            const quoteSrc = "https://kwize.com/quote-of-the-day/embed/&txt=2c1f14&font=Poppins&color=2E6B70&background=F5F0E8";
+            $('#quote-iframe').attr('src', quoteSrc);
+
+            // --- BIO TYPEWRITER ---
+            const bioElement = $('.bio');
+            const originalBioText = bioElement.text();
+            if (localStorage.getItem('hasSeenBioAnimation')) {
+                bioElement.text(originalBioText).addClass('typing-done');
+            } else {
+                bioElement.text('');
+                let i = 0;
+                const typingInterval = setInterval(function() {
+                    if (i < originalBioText.length) {
+                        bioElement.append(originalBioText.charAt(i++));
+                    } else {
+                        clearInterval(typingInterval);
+                        bioElement.addClass('typing-done');
+                        localStorage.setItem('hasSeenBioAnimation', 'true');
+                    }
+                }, 50);
+            }
+
+            // --- UNIQUE ID LOGIC ---
+            let uniqueId = localStorage.getItem('uniqueId');
+            if (!uniqueId) {
+                const now = new Date();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                let hours = now.getHours() % 12 || 12;
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                uniqueId = `${month}${day}-${String(hours).padStart(2,'0')}${minutes}`;
+                localStorage.setItem('uniqueId', uniqueId);
+            }
+            $('#unique-id').text(uniqueId);
+
+            // --- TIME AND GREETING ---
+            const $greetingText = $('#greeting-text');
+            const $liveClock = $('#live-clock');
+            function getGreeting(hour) {
+                if (hour >= 5 && hour < 12) return 'Good Morning';
+                if (hour >= 12 && hour < 18) return 'Good Afternoon';
+                return 'Good Evening';
+            }
+            function updateClock() {
+                const now = new Date();
+                let h = now.getHours();
+                const m = String(now.getMinutes()).padStart(2, '0');
+                const s = String(now.getSeconds()).padStart(2, '0');
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12 || 12;
+                $liveClock.text(`${h}:${m}:${s} ${ampm}`);
+            }
+            function startGreetingSequence() {
+                const greeting = getGreeting(new Date().getHours());
+                $greetingText.text(greeting).removeClass('slide-out').addClass('slide-in');
+                $liveClock.removeClass('slide-in');
+                setTimeout(() => {
+                    $greetingText.removeClass('slide-in').addClass('slide-out');
+                    updateClock();
+                    setInterval(updateClock, 1000);
+                    setTimeout(() => { $liveClock.addClass('slide-in'); }, 500);
+                }, 8000);
+            }
+            startGreetingSequence();
+
+            // --- MENU LOGIC ---
+            const $menu = $('#menu');
+            const $sparkle = $('#sparkleEffect');
+            let isAnimating = false;
+
+            function closeMenu() {
+                if (isAnimating || !$menu.hasClass('is-visible')) return;
+                isAnimating = true;
+                $menu.removeClass('is-opening').addClass('is-closing');
+                $menu.one('animationend', function() {
+                    $menu.removeClass('is-closing is-visible').hide();
+                    $sparkle.removeClass('hidden');
+                    isAnimating = false;
+                });
+            }
+            function openMenu() {
+                if (isAnimating || $menu.hasClass('is-visible')) return;
+                isAnimating = true;
+                $sparkle.addClass('hidden');
+                $menu.addClass('is-visible').show().addClass('is-opening');
+                $menu.one('animationend', function() {
+                    $menu.removeClass('is-opening');
+                    isAnimating = false;
+                });
+            }
+            $('#menuButton').on('click', function(e) {
+                e.stopPropagation();
+                $menu.hasClass('is-visible') ? closeMenu() : openMenu();
+            });
+
+            // --- CHANGELOG PAGE ---
+            const $changelogPage = $('#changelog-page');
+            $('#changelog-menu-item').on('click', function(e) {
+                e.stopPropagation();
+                $changelogPage.css('display', 'flex');
+                $('body').css('overflow', 'hidden');
+                closeMenu();
+            });
+            $('#changelog-close-btn').on('click', function() {
+                $changelogPage.fadeOut(300, function() {
+                    $('body').css('overflow', 'hidden');
+                });
+            });
+
+            // --- BIRTHDAY CHECK ---
+            const nowTime = new Date();
+            const utc = nowTime.getTime() + (nowTime.getTimezoneOffset() * 60000);
+            const phTime = new Date(utc + (3600000 * 8));
+            if (phTime.getMonth() === 3 && phTime.getDate() === 20) {
+                $('#birthday-popup-overlay').css('display', 'flex');
+            }
+            $('#birthday-popup-close, #birthday-popup-overlay').on('click', function(e) {
+                if (e.target === this || e.target.id === 'birthday-popup-close') {
+                    $('#birthday-popup-overlay').fadeOut(300);
+                }
+            });
+
+            // --- INFO POPUPS ---
+            $('.info-icon').on('click', function(e) {
+                e.stopPropagation();
+                if ($(this).hasClass('flip-icon')) return;
+                let currentPopup = $(this).siblings('.info-popup');
+                $('.info-popup').not(currentPopup).fadeOut(150);
+                currentPopup.fadeToggle(150);
+            });
+            $('.info-popup').on('click', function(e) { e.stopPropagation(); });
+            $(document).on('click', function(e) {
+                if ($menu.hasClass('is-visible') && !$(e.target).closest('#menu, #menuButton').length) closeMenu();
+                if ($('.info-popup:visible').length > 0 && !$(e.target).closest('.icon-wrapper, .info-popup').length) $('.info-popup').fadeOut(150);
+            });
+
+            // --- COPY LOGIC ---
+            function copyTextFallback(text, feedbackElement) {
+                const ta = document.createElement("textarea");
+                ta.value = text;
+                ta.style.position = 'fixed'; ta.style.top = '-9999px'; ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.focus(); ta.select();
+                try { document.execCommand('copy'); if(feedbackElement) showCopyFeedback(feedbackElement); }
+                catch (err) { console.error('Fallback copy failed', err); }
+                document.body.removeChild(ta);
+            }
+            function showCopyFeedback(feedbackEl) {
+                feedbackEl.text('Copied').addClass('visible');
+                setTimeout(() => { feedbackEl.removeClass('visible'); }, 2000);
+            }
+            function universalCopy(textToCopy, feedbackEl) {
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        if(feedbackEl) showCopyFeedback(feedbackEl);
+                    }).catch(() => copyTextFallback(textToCopy, feedbackEl));
+                } else {
+                    copyTextFallback(textToCopy, feedbackEl);
+                }
+            }
+            $('#copy-id-button').on('click', function() {
+                universalCopy($('#unique-id').text(), $('#copy-feedback'));
+            });
+
+            // --- CARD FLIP ---
+            let isCardFlipping = false;
+            $('.flip-icon').on('click', function() {
+                if (isCardFlipping) return;
+                isCardFlipping = true;
+                if (navigator.vibrate) navigator.vibrate(100);
+                $('#profile-card').toggleClass('is-flipped');
+                setTimeout(() => { isCardFlipping = false; }, 1000);
+            });
+
+            // --- COPY LINK FROM BACK ---
+            $('#copy-link-button').on('click', function() {
+                const originalIcon = $(this).html();
+                universalCopy($('#page-link-box').text());
+                $(this).html('✔️');
+                setTimeout(() => { $(this).html(originalIcon); }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
